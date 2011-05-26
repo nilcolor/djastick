@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
-from django.conf.urls.defaults import patterns, include, url
-from djastick.core.resources import Resource
-from django.conf import settings
+from django.conf.urls.defaults import patterns, url
 
 def urn(regex, resource, name, module=None):
+    """
+    Helper for RegexURLPattern creation.
+    Same as django "url", but works with dispatcher instead of simple view.
+    """
     return url(regex, dispatch, {'module': module, 'resource': resource}, name=name)
 
 
 def urnpatterns(module, *urlparams):
+    """
+    Helper for "patterns" creation.
+    Same as django "patterns", but works with dispatcher instead of simple view.
+    """
     for url in urlparams:
         url.default_args.update({'module': module})
     return patterns('', *urlparams)
@@ -22,41 +28,3 @@ def dispatch(request, module, resource, **kwargs):
     resource = getattr(module, resource)
     method = request.method.lower()
     return getattr(resource(), method)(request, **kwargs)
-
-
-def generate_urlpatterns():
-    """
-    No docstring yet
-    """
-    urlpatterns = patterns('')
-    
-    for app in settings.INSTALLED_APPS:
-        module = app + '.resources'
-        try:
-            m = import_module(module)
-        except ImportError:
-            continue
-        
-        module_urls = []
-        
-        for attr_name in dir(m):
-            attr = getattr(m, attr_name)
-            
-            if isinstance(attr, type) and issubclass(attr, Resource):
-                urlpattern = attr.Meta.urlpattern #TODO replase with _meta attr
-            else:
-                continue
-            
-            if urlpattern:
-                module_urls.append( url(urlpattern, dispatch, {'module': module, 'resource': attr_name}, name=attr_name) )
-        
-        module_patterns = patterns('', *module_urls)
-        
-        urlpatterns += patterns('',
-            url('^', include((module_patterns, app, app)))
-        )
-    
-    return urlpatterns
-
-
-urlpatterns = generate_urlpatterns()
