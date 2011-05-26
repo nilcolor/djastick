@@ -4,14 +4,24 @@ from django.conf.urls.defaults import patterns, include, url
 from djastick.core.resources import Resource
 from django.conf import settings
 
+def urn(regex, resource, name, module=None):
+    return url(regex, dispatch, {'module': module, 'resource': resource}, name=name)
+
+
+def urnpatterns(module, *urlparams):
+    for url in urlparams:
+        url.default_args.update({'module': module})
+    return patterns('', *urlparams)
+
+
 def dispatch(request, module, resource, **kwargs):
     """
     Main url dispatcher. Its only load resource and launch it.
     """
     module = import_module(module)
     resource = getattr(module, resource)
-    
-    return resource().__getattribute__(request.method.lower())(request, **kwargs)
+    method = request.method.lower()
+    return getattr(resource(), method)(request, **kwargs)
 
 
 def generate_urlpatterns():
