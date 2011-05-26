@@ -10,7 +10,8 @@ def dispatch(request, module, resource, **kwargs):
     """
     module = import_module(module)
     resource = getattr(module, resource)
-    return resource().launch(request, **kwargs)
+    
+    return resource().__getattribute__(request.method.lower())(request, **kwargs)
 
 
 def generate_urlpatterns():
@@ -18,34 +19,35 @@ def generate_urlpatterns():
     No docstring yet
     """
     urlpatterns = patterns('')
-
+    
     for app in settings.INSTALLED_APPS:
         module = app + '.resources'
         try:
             m = import_module(module)
         except ImportError:
             continue
-
+        
         module_urls = []
-
+        
         for attr_name in dir(m):
             attr = getattr(m, attr_name)
-
+            
             if isinstance(attr, type) and issubclass(attr, Resource):
                 urlpattern = attr.Meta.urlpattern #TODO replase with _meta attr
             else:
                 continue
-
+            
             if urlpattern:
                 module_urls.append(url(urlpattern, dispatch,
                    {'module': module, 'resource': attr_name}, name=attr_name))
-
+        
         module_patterns = patterns('', *module_urls)
-
+        
         urlpatterns += patterns('',
             url('^', include((module_patterns, app, app)))
         )
-
+    
     return urlpatterns
+
 
 urlpatterns = generate_urlpatterns()
