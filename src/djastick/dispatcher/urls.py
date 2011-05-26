@@ -38,8 +38,7 @@ def generate_urlpatterns():
                 continue
             
             if urlpattern:
-                module_urls.append(url(urlpattern, dispatch,
-                   {'module': module, 'resource': attr_name}, name=attr_name))
+                module_urls.append( url(urlpattern, dispatch, {'module': module, 'resource': attr_name}, name=attr_name) )
         
         module_patterns = patterns('', *module_urls)
         
