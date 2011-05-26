@@ -12,7 +12,7 @@ usage:
 >>     HYBRID = EnumItem(300, "'Not sure' creature")
 >> 
 >> 
->> foo = FOO.HYBRID
+>> foo = FOO.HYBRID.id
 >> print "foo sex is %s" % SEX.get(foo)
 
 You can pass it like (as) choices to a field:
