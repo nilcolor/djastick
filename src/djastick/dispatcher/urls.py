@@ -11,7 +11,7 @@ def dispatch(request, module, resource, **kwargs):
     module = import_module(module)
     resource = getattr(module, resource)
     
-    return resource().__getattribute__(request.method.lower())(request, **kwargs)
+    return resource().__getattribute__(request.mode.lower())(request, **kwargs)
 
 
 def generate_urlpatterns():

@@ -13,11 +13,13 @@ class HttpMethodsOverride(object):
     MIDDLEWARE_KEY = '_method'
     
     def process_request(self, request):
+        setattr(request, 'mode', 'GET') # anyway i need a `mode` attribute
         if request.POST and request.POST.has_key(self.MIDDLEWARE_KEY):
             if request.POST[self.MIDDLEWARE_KEY].upper() in self.SUPPORTED_TRANSFORMS:
-                request.method = request.POST[self.MIDDLEWARE_KEY].upper()
-        else:
-            request.method = 'GET'
+                # nice way but broke Django...
+                # request.method = request.POST[self.MIDDLEWARE_KEY].upper()
+                setattr(request, 'mode', request.POST)
+                setattr(request, request.method, request.POST)
         
         print request.method
         
