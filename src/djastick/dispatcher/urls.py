@@ -1,14 +1,31 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
-from django.conf import settings
-from django.conf.urls.defaults import patterns, include, url
-from djastick.core.resources import Resource
 from django.dispatch import Signal
+from django.conf.urls.defaults import patterns, url
 
 from djastick.core import STATUS
 
 
 security_should_check = Signal(providing_args=["module", "resource", "mode"])
+
+def urn(regex, resource, name, module=None):
+    """
+    Helper for RegexURLPattern creation.
+    Same as django "url", but works with dispatcher instead of simple view.
+    """
+    return url(regex, dispatch, {'module': module, 'resource': resource}, name=name)
+
+
+def urnpatterns(module, *urlparams):
+    """
+    Helper for "patterns" creation.
+    Same as django "patterns", but works with dispatcher instead of simple view.
+    """
+    for url in urlparams:
+        url.default_args.update({'module': module})
+    
+    return patterns('', *urlparams)
+
 
 def dispatch(request, module, resource, **kwargs):
     """
@@ -18,6 +35,10 @@ def dispatch(request, module, resource, **kwargs):
         module = import_module(module)
         resource = getattr(module, resource)
         handler = resource().__getattribute__(request.mode.lower())
+        # module = import_module(module)
+        # resource = getattr(module, resource)
+        # method = request.method.lower()
+        # return getattr(resource(), method)(request, **kwargs)
     except Exception:
         return STATUS.NOT_IMPLEMENTED
     
@@ -55,4 +76,5 @@ def ro_system(sender, **kwargs):
     return kwargs['mode'] != 'DELETE'
 
 security_should_check.connect(ro_system)
+
 
