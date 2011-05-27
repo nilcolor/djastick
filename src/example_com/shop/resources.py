@@ -11,5 +11,9 @@ class GoodsListResource(object):
         
         return HttpResponse('Hallo djastick!!!')
         # return STATUS.NOT_IMPLEMENTED
+        
+    def delete(self, request):
+        """docstring for delete"""
+        return HttpResponse('You just deleted djastick!!!')
 
 
