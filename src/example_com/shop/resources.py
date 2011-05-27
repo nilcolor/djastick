@@ -2,7 +2,7 @@
 from django.http import HttpResponse
 from djastick.core.resources import Resource
 
-class GoodsListResource(object):
+class GoodsListResource(Resource):
     """
     List of goods.
     """
