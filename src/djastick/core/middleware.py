@@ -1,7 +1,7 @@
 # encoding: utf-8
-
 import re
 import itertools
+
 
 class HttpMethodsOverride(object):
     """
