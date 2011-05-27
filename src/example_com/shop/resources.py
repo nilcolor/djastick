@@ -6,15 +6,21 @@ class GoodsListResource(Resource):
     """
     List of goods.
     """
-    class Meta:
-        urlpattern = r'^$'
-    
-    def launch(self, request):
-        return HttpResponse('Hallo djastick!!!')
-    
     def get(self, request):
         from djastick.core import STATUS
         
+        # return HttpResponse('Hallo djastick!!!')
         return STATUS.NOT_IMPLEMENTED
+
+
+class GoodsListResource(Resource):
+    """
+    List of goods.
+    """
+    def get(self, request):
+        from djastick.core import STATUS
+        
+        return HttpResponse('Hallo djastick!!!')
+        # return STATUS.NOT_IMPLEMENTED
 
 
