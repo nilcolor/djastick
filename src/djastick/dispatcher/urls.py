@@ -34,11 +34,7 @@ def dispatch(request, module, resource, **kwargs):
     try:
         module = import_module(module)
         resource = getattr(module, resource)
-        handler = resource().__getattribute__(request.mode.lower())
-        # module = import_module(module)
-        # resource = getattr(module, resource)
-        # method = request.method.lower()
-        # return getattr(resource(), method)(request, **kwargs)
+        handler = getattr(resource(), request.mode.lower())
     except Exception:
         return STATUS.NOT_IMPLEMENTED
     
