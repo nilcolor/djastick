@@ -99,6 +99,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'djastick.core.middleware.HttpMethodsOverride',
+    'djastick.core.middleware.BodyDecoder',
 )
 
 ROOT_URLCONF = 'example_com.urls'
